@@ -5,19 +5,18 @@ from transformers.image_utils import load_image
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Load images
-image = load_image("https://cdn.britannica.com/61/93061-050-99147DCE/Statue-of-Liberty-Island-New-York-Bay.jpg")
+image = Image.open("/root/ft/selected_images/887302026966822912.jpg")
 instruction = """
-You are an expert at detecting sarcasm in online content. Analyze the provided input, which may be text only, image only, or both text and image together.
-Is the given input(s) sarcastic?
+Explain what you see in the image in detail?
 """
 
-text = "I just love getting stuck in traffic"
+text = None
 
 
 # Initialize processor and model
-processor = AutoProcessor.from_pretrained("sinngam-khaidem/Llama-3.2-11B-Vision-Instruct-MMSD-merged-2")
+processor = AutoProcessor.from_pretrained("HuggingFaceTB/SmolVLM-Base")
 model = AutoModelForVision2Seq.from_pretrained(
-    "sinngam-khaidem/Llama-3.2-11B-Vision-Instruct-MMSD-merged-2",
+    "sinngam-khaidem/SmolVLM-Base-vqav2",
     torch_dtype=torch.bfloat16,
     _attn_implementation="flash_attention_2" if DEVICE == "cuda" else "eager",
 ).to(DEVICE)
@@ -44,7 +43,3 @@ generated_texts = processor.batch_decode(
     skip_special_tokens=True,
 )
 print(generated_texts[0])
-"""
-User:<image>Can you describe the two images?
-Assistant: I can describe the first one, but I can't describe the second one.
-"""
